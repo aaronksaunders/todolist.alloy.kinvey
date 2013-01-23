@@ -116,7 +116,9 @@ today.
 
 **Aaron K. Saunders**  
 web: http://www.clearlyinnovative.com
+
 email: aaron@clearlyinnovative.com
+
 twitter: @aaronksaunders  
 
 ## License
