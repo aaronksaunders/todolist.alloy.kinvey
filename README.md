@@ -1,4 +1,4 @@
-# THIS DOCUMENTATION NEEDS TO BE UPDATED
+
 
 # Welcome to your Appcelerator Alloy Todo Sample with Kinvey Adapter #
 
