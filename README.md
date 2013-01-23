@@ -112,40 +112,31 @@ today.
     // end extend
 
 
-##The adjustments that were made to the sql adapter##
+## Author
 
-###Custom Query Support###
-First we added the ability to pass in custom queries. We took this approach so the sql sync adapter stays as simple as possible and all custimization should be in the extended
-model object
+**Aaron K. Saunders**  
+web: http://www.clearlyinnovative.com
+email: aaron@clearlyinnovative.com
+twitter: @aaronksaunders  
 
-	// app/assets/alloy/sync/sql2.js
-	// -----------------------------
-	if (opts.query) {
-	    // passed in predefined query
-	    rs = db.execute("SELECT * FROM " + table + " " + opts.query.sql, opts.query.params);
-	} else {
-		// NO QUERY PASSED IN
-	}
+## License
 
-###Query Model by ID###
-Then we added a conditional statement to look for the `id` on the model object that was passed in. If object provided then we just query for a single object
+    Copyright (c) 2013- Aaron K. Saunders
 
-	// app/assets/alloy/sync/sql2.js
-	// -----------------------------
-	// no query provided, check for model id
-	var sql = "SELECT * FROM " + table;
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
 
-	// check if fetching single item
-	if (model.id != undefined) {
-	    sql = sql + String.format(" WHERE id = '%s'", model.id);
-	}
-	rs = db.execute(sql);
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
 
-Appcelerator, Appcelerator Titanium and associated marks and logos are 
-trademarks of Appcelerator, Inc. 
-
-Titanium is Copyright (c) 2008-2012 by Appcelerator, Inc. All Rights Reserved.
-
-Titanium is licensed under the Apache Public License (Version 2). Please
-see the LICENSE file for the full license.
-
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
