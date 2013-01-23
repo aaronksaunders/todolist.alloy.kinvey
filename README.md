@@ -1,125 +1,62 @@
-# THIS DOCUMENTATION NEEDS TO BE UPDATE... IT IS WRONG
+# THIS DOCUMENTATION NEEDS TO BE UPDATED
 
 # Welcome to your Appcelerator Alloy Todo Sample with Kinvey Adapter #
 
-## Basic Model and Collection fetch ##
+## Changes to get Kinvey working with Appcelerator Alloy ##
 
-When fetching items, you should use the callbacks of success and error. The parameters
-of `model` and `response` return exactly what they say when the call is completed
 
-	var todo = Alloy.createModel('Todo');
-	
-	todo.fetch({
-		success : function(_model, _response) {
-		    Ti.API.info(JSON.stringify(_response, null, 2));
-		},
-		error : function(_model, _response) {
-		    Ti.API.info(JSON.stringify(_response, null, 2));
-		}
-	});
+### Including Libraries ###
+We need to include the kinvey library and initialize it
 
-### Basic Model, fetch by id ###
-Using the adapter with collections to get a single item, just provide the object id
-
-	/* HOW TO FETCH A SINGLE ITEM */
-	var todo = Alloy.createModel('Todo', {
-	    id : "38e8aa8f-714d-3634-68b3-c825eb61b9e1"
-	});
-	
-	// ths should return a collection
-	todo.fetch({
-		success : function(_model, _response) {
-		    Ti.API.info(JSON.stringify(_response, null, 2));
-		},
-		error : function(_model, _response) {
-		    Ti.API.info(JSON.stringify(_response, null, 2));
-		}
+	Ti.include("kinvey-titanium-0.9.12.js");
+	Kinvey.init({
+	    appKey : "kid_eT6Q6xLpBM",
+	    appSecret : "5480069be69047759f3219a30e292a74"
 	});
 
 
-### Basic Collection, fetch all items ###
-Using the adapter with collections to get all items
+### Missing `models` array on the Collections ###
+Kinvey Collections use the field list instead of Models, so we just need to becareful
+in our code
 
-	/* HOW TO FETCH A SINGLE ITEM */
-	var todo = Alloy.createModel('Todo', {
-	    id : "38e8aa8f-714d-3634-68b3-c825eb61b9e1"
-	});
-	
-	// this should return a model and not a collection
-	todo.fetch({
-		success : function(_model, _response) {
-		    Ti.API.info(JSON.stringify(_response, null, 2));
-		},
-		error : function(_model, _response) {
-		    Ti.API.info(JSON.stringify(_response, null, 2));
-		}
-	});
-
-### Custom Collection Query, Extending Collection Object ###
-To create custom queries, you can extend the model object. In the example below,
-I have extended the model object with a custom query to fetch what items I completed
-today.
-
-	// app/models/todo.js
-	// ------------------
-	extendCollection : function(Collection) {
-		_.extend(Collection.prototype, {
-
-	        /**
-	         * returns all objects that were completed today
-	         */
-	        completedToday : function(_options) { 
-	            var self = this;
-
-	            // this can be more elegant, but kept it simple for demo purposes
-	            //
-	            // db.execute("SELECT FROM " + table + " " + opts.query.sql, opts.query.params);
-	            //
-	            var yesterday, tomorrow;
-
-	            // get today and reset to midnight
-				// moment().hours(0).minutes(0).seconds(1)
-				//
-				
-				// use moment.js to calc yesterday and today
-	            yesterday = moment().hours(0).minutes(0).seconds(1).subtract('days', 1);
-	            tomorrow = moment().hours(0).minutes(0).seconds(1).add('days', 1);
-
-	            // debug information
-	            Ti.API.info("today " + moment().hours(0).minutes(0).seconds(1).calendar());
-	            Ti.API.info("yesterday " + yesterday.calendar());
-	            Ti.API.info("tomorrow " + tomorrow.calendar());
-
-				// push the params for the query into array
-	            var p = [];
-	            p.push(yesterday.unix());
-	            p.push(tomorrow.unix());
-				
-				// this is the query string that we will perform substitution on in the 
-				// sql adapter
-				var s =  'WHERE date_completed between ? AND ?';
-				
-	            // pass params
-	            _options['query'] = {
-	                "sql" : s,
-	                "params" : p
-	            };
-				
-				// execute normal fetch
-	            self.fetch(_options);
-	        },
+    // simple hack for finding an item in a collection
+	// we could extend the object to put the list where models
+	// should be so we can use the default functionality of 
+	// Backbone
+	TODOS = new Kinvey.Collection("todos"); 
+    var model = _.filter(TODOS.list, function(_i){
+       return _i.get("_id") === e.rowData.id;
     });
-    // end extend
+	
+	
+### Missing `models` and `collections` event binding ###
 
+    TODOS = new Kinvey.Collection("todos");
+    Alloy._.extend(TODOS, Alloy.Backbone.Events);  
+
+here we add events to the model
+	
+    todoModel = new Kinvey.Entity("todos");
+    Alloy._.extend(todoModel, Alloy.Backbone.Events);
+
+This allows us to trigger the fetch and change events on models and collections.
+
+	TODOS = new Kinvey.Collection("todos");
+	TODOS.fetch({
+	    add : false,
+	    success : function() {
+			// if someone is listening for fetch to update
+	        TODOS.trigger('fetch');
+	    }
+	});
 
 ## Author
 
 **Aaron K. Saunders**  
-web: http://www.clearlyinnovative.com
 
-email: aaron@clearlyinnovative.com
-
-twitter: @aaronksaunders  
+   web: http://www.clearlyinnovative.com  
+   email: aaron@clearlyinnovative.com  
+   twitter: @aaronksaunders  
 
 ## License
 
