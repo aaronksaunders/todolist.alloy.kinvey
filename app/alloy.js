@@ -1,4 +1,4 @@
-var $G = Alloy.Globals;
+var $G = Alloy.globals;
 var moment = require("moment");
 
 if (!$G.$K) {
